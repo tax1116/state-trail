@@ -57,8 +57,12 @@ jobs:
           key: ${{ github.ref_name }}-gradle-${{ github.sha }}
           restore-keys: ${{ github.ref_name }}-gradle-
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      - name: Grant execute permission for verification scripts
+        run: |
+          chmod +x gradlew
+          if [ -d scripts ]; then
+            find scripts -type f -name '*.sh' -exec chmod +x {} +
+          fi
 
-      - name: Build with Gradle
-        run: ./gradlew check
+      - name: Run strict quality harness
+        run: scripts/ci-verify.sh

@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+set -eu
+
+repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+verify_script="${repo_root}/scripts/pre-commit-verify.sh"
+
+if [ ! -f "$verify_script" ]; then
+    echo "StateTrail Codex pre-commit hook failed: scripts/pre-commit-verify.sh was not found." >&2
+    exit 127
+fi
+
+if [ -x "$verify_script" ]; then
+    exec "$verify_script"
+fi
+
+exec bash "$verify_script"

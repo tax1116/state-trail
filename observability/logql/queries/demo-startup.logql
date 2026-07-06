@@ -1,0 +1,4 @@
+# name: demo-startup
+# description: Finds Spring Boot startup evidence for the StateTrail demo application.
+# live: optional
+{app="state-trail-demo"} |= "Started"

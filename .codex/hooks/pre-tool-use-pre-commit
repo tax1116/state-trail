@@ -1,0 +1,184 @@
+#!/usr/bin/env sh
+set -eu
+
+repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
+payload_file=$(mktemp "${TMPDIR:-/tmp}/statetrail-pretooluse.XXXXXX")
+trap 'rm -f "$payload_file"' EXIT HUP INT TERM
+
+if [ "${1:-}" = "--self-test" ]; then
+    : > "$payload_file"
+else
+    cat > "$payload_file"
+fi
+
+node - "$payload_file" "$repo_root" "$@" <<'NODE'
+const fs = require("fs");
+const { spawnSync } = require("child_process");
+
+const payloadPath = process.argv[2];
+const repoRoot = process.argv[3];
+const args = process.argv.slice(4);
+
+function readPayload(path) {
+    const text = fs.readFileSync(path, "utf8").trim();
+    if (!text) {
+        return {};
+    }
+    return JSON.parse(text);
+}
+
+function shellTokens(command) {
+    const tokens = [];
+    let current = "";
+    let quote = null;
+    let escaping = false;
+
+    const push = () => {
+        if (current !== "") {
+            tokens.push(current);
+            current = "";
+        }
+    };
+
+    for (let index = 0; index < command.length; index += 1) {
+        const char = command[index];
+
+        if (escaping) {
+            current += char;
+            escaping = false;
+            continue;
+        }
+
+        if (quote === "'") {
+            if (char === "'") {
+                quote = null;
+            } else {
+                current += char;
+            }
+            continue;
+        }
+
+        if (quote === '"') {
+            if (char === '"') {
+                quote = null;
+            } else if (char === "\\") {
+                escaping = true;
+            } else {
+                current += char;
+            }
+            continue;
+        }
+
+        if (char === "'" || char === '"') {
+            quote = char;
+            continue;
+        }
+
+        if (char === "\\") {
+            escaping = true;
+            continue;
+        }
+
+        if (char === "\n" || char === "\r") {
+            push();
+            tokens.push("\n");
+            if (char === "\r" && command[index + 1] === "\n") {
+                index += 1;
+            }
+            continue;
+        }
+
+        if (/\s/.test(char)) {
+            push();
+            continue;
+        }
+
+        if (isCommandSeparator(char)) {
+            push();
+            tokens.push(char);
+            continue;
+        }
+
+        current += char;
+    }
+
+    if (escaping || quote) {
+        return [];
+    }
+
+    push();
+    return tokens;
+}
+
+function isCommandSeparator(token) {
+    return token === ";" || token === "|" || token === "&" || token === "\n";
+}
+
+function isGitCommitCommand(command) {
+    const tokens = shellTokens(command.trim());
+    let commandStart = true;
+
+    for (let index = 0; index < tokens.length; index += 1) {
+        const token = tokens[index];
+
+        if (isCommandSeparator(token)) {
+            commandStart = true;
+            continue;
+        }
+
+        if (commandStart && token === "git" && tokens[index + 1] === "commit") {
+            return true;
+        }
+
+        commandStart = false;
+    }
+
+    return false;
+}
+
+if (args.includes("--self-test")) {
+    const cases = [
+        { command: "git commit -m review-feedback", expected: true },
+        { command: "git add .\ngit commit -m review-feedback", expected: true },
+        { command: "git add .\r\ngit commit -m review-feedback", expected: true },
+        { command: "echo git commit", expected: false },
+        { command: "printf 'git commit\\n'", expected: false },
+    ];
+
+    for (const testCase of cases) {
+        const actual = isGitCommitCommand(testCase.command);
+        if (actual !== testCase.expected) {
+            console.error(
+                `StateTrail Codex pre-commit hook self-test failed for ${JSON.stringify(testCase.command)}: expected ${testCase.expected}, got ${actual}`,
+            );
+            process.exit(1);
+        }
+    }
+
+    console.log("StateTrail Codex pre-commit hook self-test passed");
+    process.exit(0);
+}
+
+const payload = readPayload(payloadPath);
+const toolName = typeof payload.tool_name === "string" ? payload.tool_name.trim() : "";
+const command = payload.tool_input && typeof payload.tool_input.command === "string"
+    ? payload.tool_input.command
+    : "";
+
+if (toolName !== "Bash" || !isGitCommitCommand(command)) {
+    process.exit(0);
+}
+
+const result = spawnSync(`${repoRoot}/.codex/hooks/pre-commit`, {
+    cwd: repoRoot,
+    stdio: "inherit",
+    shell: false,
+});
+
+if (result.error) {
+    console.error(`StateTrail Codex pre-commit hook failed to start: ${result.error.message}`);
+    process.exit(127);
+}
+
+process.exit(result.status === null ? 1 : result.status);
+NODE

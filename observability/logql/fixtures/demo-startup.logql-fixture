@@ -1,0 +1,5 @@
+# name: demo-startup
+# description: Representative demo startup log evidence for the demo-startup query.
+# query: demo-startup
+# live: optional
+2026-07-06T12:00:00Z app=state-trail-demo level=INFO message="Started StateTrail demo application"
