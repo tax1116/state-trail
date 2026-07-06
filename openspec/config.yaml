@@ -1,20 +1,42 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  StateTrail is a Kotlin 2.2 / Java 21 / Spring Boot workspace for tracing
+  state transitions in event-driven systems. The default package namespace is
+  io.statetrail.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Documentation model:
+  - Long-lived documentation is centered on Specs and ADRs.
+  - `openspec/specs/` contains durable observable behavior contracts.
+  - `docs/adr/` contains durable architecture and process decision rationale.
+  - `openspec/changes/<change>/` is a review and implementation package for one
+    Spec Change; read it when working on that change.
+  - `openspec/changes/archive/` is historical record, not active guidance.
+  - `docs/research/` is ignored local research and draft space. Promote durable
+    conclusions into Specs or ADRs before treating them as repository guidance.
+
+rules:
+  proposal:
+    - Describe the user-visible problem and the behavior contract being changed.
+    - Keep proposals reviewable; include non-goals when the boundary is easy to
+      misread.
+    - Do not treat the proposal as durable documentation after the change lands;
+      promote lasting behavior into `openspec/specs/`.
+  specs:
+    - Write Specs as observable behavior contracts, not implementation notes.
+    - Prefer requirements and scenarios that people and agents can verify from
+      outside the implementation.
+    - Keep active behavior guidance in `openspec/specs/`; do not rely on
+      archived change packages as the current source of truth.
+  design:
+    - Use design documents for change-specific implementation rationale and
+      tradeoffs.
+    - If a decision should guide future architecture or process work, add or
+      update an ADR under `docs/adr/`.
+    - Keep design text tied to the current change; avoid duplicating the final
+      behavior contract that belongs in Specs.
+  tasks:
+    - Break work into verifiable implementation and documentation steps.
+    - Include validation tasks for affected Specs, ADRs, tests, and build checks
+      when applicable.
+    - Treat task lists as execution aids, not durable project guidance.
