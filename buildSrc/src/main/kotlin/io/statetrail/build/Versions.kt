@@ -1,4 +1,4 @@
-package kr.co.taek.dev.build
+package io.statetrail.build
 
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project

@@ -1,6 +1,17 @@
-# spring-boot-multi-module-template
+# StateTrail
 
-스프링 부트 멀티모듈 템플릿 프로젝트
+StateTrail은 이벤트 기반 시스템을 위한 상태 전이 추적 및 검증 플랫폼입니다.
+
+Kafka 같은 메시징 시스템 위에서 애플리케이션이 이벤트를 생산하고 소비할 때, StateTrail은 어떤 이벤트가 어떤 aggregate의 상태를 바꾸었는지, 어떤 consumer가 전이를 적용했는지, 어떤 전이가 유효하지 않았는지를 추적하는 것을 목표로 합니다.
+
+## 현재 상태
+
+이 저장소는 StateTrail의 제품 요구사항과 Kotlin/Spring 기반 구현을 함께 정리하는 초기 작업 공간입니다.
+
+- 제품 기준 문서: [docs/PRD.md](docs/PRD.md)
+- 첫 구현 방향: Kafka-first, Kotlin/Spring SDK-first, observe-first
+- 현재 모듈: `demo`
+- 패키지 네임스페이스: `io.statetrail`
 
 ## 기술 스택
 
@@ -8,53 +19,43 @@
 - **Framework:** Spring Boot 4.0.3
 - **Build:** Gradle 9.4.0 (Kotlin DSL)
 - **Java:** 21
-- **Test:** JUnit 5 (spring-boot-starter-test)
+- **Test:** JUnit 5 (`spring-boot-starter-test`)
 - **Lint:** ktlint
 
 ## 빌드 명령어
 
 ```bash
-./gradlew build              # 전체 모듈 빌드 및 테스트
-./gradlew check              # 전체 검사 실행 (테스트 + ktlint)
-./gradlew bootRun            # Spring Boot 애플리케이션 실행
-./gradlew bootJar            # 실행 가능한 jar 빌드
-
-# 테스트
-./gradlew test               # 전체 테스트 실행
-./gradlew :demo:test         # 특정 모듈 테스트 실행
-./gradlew test --tests "fully.qualified.TestClass"  # 단일 테스트 클래스 실행
-
-# 린트 (ktlint)
-./gradlew ktlintCheck        # 코드 스타일 검사
-./gradlew ktlintFormat       # 코드 자동 포맷팅
+./gradlew build
+./gradlew check
+./gradlew :demo:bootRun
+./gradlew :demo:test
 ```
 
-## 아키텍처
+## 프로젝트 구조
 
-### 컨벤션 플러그인 시스템 (buildSrc)
+```text
+.
+├── buildSrc/              # Gradle convention plugin
+├── demo/                  # 초기 Spring Boot demo module
+├── docs/
+│   └── PRD.md             # StateTrail 제품 요구사항
+├── gradle/                # Gradle wrapper/catalog
+├── build.gradle.kts
+└── settings.gradle.kts
+```
 
-빌드 로직은 개별 모듈의 build 파일이 아닌 `buildSrc/src/main/kotlin/`에 컨벤션 플러그인으로 중앙 집중화되어 있다.
+## 빌드 컨벤션
+
+빌드 로직은 `buildSrc/src/main/kotlin/`의 convention plugin으로 관리합니다.
 
 | 플러그인 | 설명 |
 |---|---|
-| `global-convention` | 모든 모듈에 적용. Kotlin JVM, ktlint, Java 21 툴체인, kotlin-logging, JUnit 5, 저장소 설정 |
-| `spring-boot-convention` | Spring Boot 플러그인, dependency-management 플러그인, Kotlin Spring 플러그인(all-open) 적용. bootJar로 실행 가능한 앱 빌드 |
-| `spring-jar-convention` | Spring Boot BOM을 `platform()`으로 가져오는 라이브러리 모듈용. bootJar 없이 일반 jar로 빌드 |
+| `global-convention` | Kotlin JVM, ktlint, Java 21 toolchain, kotlin-logging, JUnit 5, repository 설정 |
+| `spring-boot-convention` | Spring Boot application module용 convention |
+| `spring-jar-convention` | Spring Boot BOM을 사용하는 library module용 convention |
 
-### 새 모듈 추가 방법
+## 다음 정리 후보
 
-1. 프로젝트 루트에 새 디렉토리 생성
-2. 적절한 컨벤션 플러그인을 적용하는 `build.gradle.kts` 추가
-3. `settings.gradle.kts`에 `include()`로 모듈 등록
-4. Kotlin, 린트, 테스트, 의존성 관리가 자동으로 상속됨
-
-### 버전 관리
-
-모든 의존성 버전은 `gradle/libs.versions.toml`(Gradle 버전 카탈로그)에서 중앙 관리.
-
-## CI
-
-GitHub Actions에서 JDK 21(Amazon Corretto) 환경으로 main/dev push와 PR에 `./gradlew check` 실행.
-
-- `org.gradle.caching=true`로 Gradle 빌드 캐시 활성화
-- merge-base 기반 캐싱 전략으로 증분 빌드 최적화
+- `ARCHITECTURE.md` 작성
+- SDK/server/UI/demo module 분리 전략 확정
+- README의 실행 예시를 실제 demo scenario에 맞게 갱신

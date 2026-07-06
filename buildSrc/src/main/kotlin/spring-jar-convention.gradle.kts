@@ -1,4 +1,4 @@
-import kr.co.taek.dev.build.libs
+import io.statetrail.build.libs
 
 plugins {
     id("global-convention")

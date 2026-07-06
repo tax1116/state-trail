@@ -1,12 +1,12 @@
-import kr.co.taek.dev.build.JDK_VERSION
-import kr.co.taek.dev.build.libs
+import io.statetrail.build.JDK_VERSION
+import io.statetrail.build.libs
 
 plugins {
     kotlin("jvm")
     id("org.jlleitschuh.gradle.ktlint")
 }
 
-group = "kr.co.taek.dev"
+group = "io.statetrail"
 
 java {
     toolchain {
