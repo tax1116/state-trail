@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'repo_root=$(git rev-parse --show-toplevel 2>/dev/null || pwd); exec \"$repo_root/.codex/hooks/pre-tool-use-pre-commit\"'"
+          }
+        ]
+      }
+    ]
+  }
+}
