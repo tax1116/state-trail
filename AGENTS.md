@@ -26,7 +26,7 @@ Kotlin 2.2, Java 21 toolchain, Spring Boot 기반 `buildSrc` 컨벤션을 따르
 
 ## Commit & Pull Request Guidelines
 
-더 구체적인 규칙이 생기기 전까지 커밋 메시지는 간결하고 변경 의도 중심으로 작성하세요. PR에는 해결하려는 문제, 선택한 접근 방식, 검증 결과, 관련 이슈를 포함합니다. 런타임 동작, API 응답, 개발자-facing 출력이 바뀌면 스크린샷이나 로그를 첨부하세요.
+브랜치 관리는 GitHub Flow를 따르되 `dev`를 기본 통합 브랜치로 둡니다. `main`은 릴리스가 필요할 때만 병합하는 안정 브랜치로 유지합니다. 기능 개발은 `feat/<topic>` 브랜치에서 진행합니다. 큰 단위 프로젝트는 `integration/<topic>` 통합 브랜치를 만들고, 관련 기능 브랜치는 여기에 먼저 병합한 뒤 완료 시 `dev`로 올립니다. 커밋 메시지는 간결하고 변경 의도 중심으로 작성하세요. PR에는 해결하려는 문제, 선택한 접근 방식, 검증 결과, 관련 이슈를 포함합니다. 런타임 동작, API 응답, 개발자-facing 출력이 바뀌면 스크린샷이나 로그를 첨부하세요.
 
 ## Agent-Specific Instructions
 

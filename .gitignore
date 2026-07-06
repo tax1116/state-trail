@@ -38,3 +38,6 @@ out/
 
 ### Claude Code ###
 .claude/
+
+### Local research notes ###
+docs/research/
