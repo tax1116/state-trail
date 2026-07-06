@@ -1,20 +1,41 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+context: |
+  StateTrail은 이벤트 기반 시스템의 상태 전이를 추적하기 위한 Kotlin 2.2 /
+  Java 21 / Spring Boot 작업 공간입니다. 기본 패키지 네임스페이스는
+  io.statetrail입니다.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  문서 모델:
+  - 오래 남기는 문서는 Spec과 ADR 중심으로 유지합니다.
+  - `openspec/specs/`에는 관찰 가능한 동작 계약을 둡니다.
+  - `docs/adr/`에는 오래 남는 아키텍처와 프로세스 결정 근거를 둡니다.
+  - `openspec/changes/<change>/`는 하나의 Spec Change를 리뷰하고 구현하기
+    위한 패키지입니다. 해당 변경을 작업할 때만 읽습니다.
+  - `openspec/changes/archive/`는 이력 기록이며 활성 지침이 아닙니다.
+  - `docs/research/`는 ignored 로컬 리서치와 초안 공간입니다. 오래 남길
+    결론은 저장소 지침으로 취급하기 전에 Spec 또는 ADR로 승격합니다.
+
+rules:
+  proposal:
+    - 사용자가 볼 수 있는 문제와 변경하려는 동작 계약을 설명합니다.
+    - 리뷰 가능한 크기로 유지하고, 경계를 오해하기 쉬우면 non-goals를 포함합니다.
+    - 변경이 반영된 뒤 proposal을 오래 남는 문서로 취급하지 않습니다. 오래 남는
+      동작은 `openspec/specs/`로 승격합니다.
+  specs:
+    - Spec은 구현 메모가 아니라 관찰 가능한 동작 계약으로 작성합니다.
+    - 사람과 에이전트가 구현 외부에서 검증할 수 있는 requirement와 scenario를
+      우선합니다.
+    - 활성 동작 지침은 `openspec/specs/`에 둡니다. archived change package를
+      현재 source of truth로 의존하지 않습니다.
+  design:
+    - design 문서는 해당 변경에 한정된 구현 근거와 트레이드오프에 사용합니다.
+    - 이후 아키텍처 또는 프로세스 작업을 안내해야 하는 결정이면 `docs/adr/`
+      아래에 ADR을 추가하거나 수정합니다.
+    - design 내용은 현재 변경에 묶어 둡니다. Spec에 있어야 할 최종 동작 계약을
+      중복하지 않습니다.
+  tasks:
+    - 작업을 검증 가능한 구현 및 문서 단계로 나눕니다.
+    - 해당되는 경우 영향을 받는 Spec, ADR, 테스트, build check 검증 작업을
+      포함합니다.
+    - task list는 실행 보조 자료로 취급하고, 오래 남는 프로젝트 지침으로
+      취급하지 않습니다.

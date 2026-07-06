@@ -8,6 +8,14 @@ StateTrail은 이벤트 기반 시스템의 상태 전이 추적을 위한 Kotli
 
 핵심 제품 책임과 목표 모듈 경계는 `@ARCHITECTURE.md`를 먼저 확인하세요. 제품 책임과 Gradle 모듈을 1:1로 가정하지 마세요. 모듈별 `AGENTS.md`가 추가되면 해당 모듈 안에서는 더 좁은 지침을 우선합니다.
 
+## Documentation, SDD & ADR
+
+오래 남기는 문서는 Spec과 ADR 중심으로 유지합니다. 현재 제품 동작 계약은 `openspec/specs/`에서 확인하고, 오래 남는 아키텍처와 프로세스 결정 근거는 `docs/adr/`에서 확인하세요. `openspec/changes/<change>/`는 진행 중인 Spec Change를 리뷰하고 구현하기 위한 패키지이며, 해당 변경을 작업할 때만 읽습니다. `openspec/changes/archive/`는 활성 지침이 아니라 이력으로 취급합니다. `docs/research/`는 ignored 로컬 리서치와 초안 공간이며, 결론이 Spec 또는 ADR로 승격되기 전까지 저장소 지침으로 취급하지 마세요.
+
+동작 계약이 바뀌면 Spec을 추가하거나 수정하고, 이후 작업을 제약할 아키텍처 또는 프로세스 결정이 생기면 ADR을 추가하세요. 단순 구현 메모, 작업 목록, 리서치 덤프, 내부 리팩터는 기본적으로 Spec이나 ADR로 만들지 않습니다. ADR 파일명은 `docs/adr/README.md`의 `yyyyMMddHHmmss-<slug>.md` 규칙을 따릅니다.
+
+작업을 시작할 때 먼저 변경 유형을 분류하세요. 관찰 가능한 제품 동작이나 외부 계약이 바뀌면 `openspec/changes/<change>/`에 리뷰 가능한 Spec Change를 만든 뒤 구현합니다. 구현은 TDD로 진행하고, 완료 후 delta spec을 `openspec/specs/`에 반영한 다음 change를 archive로 이동합니다. 이후 작업을 제약할 아키텍처, 프로세스, 운영상 결정이 생기면 `docs/adr/`에 ADR을 추가합니다. 단순 내부 리팩터나 작은 버그 수정처럼 동작 계약과 장기 결정이 바뀌지 않는 작업은 기존 테스트와 코드 변경만으로 처리합니다.
+
 ## Build, Test, and Development Commands
 
 - `./gradlew check`: CI와 동일한 검증을 실행합니다.
