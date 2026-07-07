@@ -1,4 +1,4 @@
-# 20260706231710. Spec과 ADR 중심 문서 모델 채택
+# Spec과 ADR 중심 문서 모델 채택
 
 Status: Accepted
 

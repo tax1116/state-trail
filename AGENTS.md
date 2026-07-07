@@ -12,9 +12,11 @@ StateTrail은 이벤트 기반 시스템의 상태 전이 추적을 위한 Kotli
 
 오래 남기는 문서는 Spec과 ADR 중심으로 유지합니다. 현재 제품 동작 계약은 `openspec/specs/`에서 확인하고, 오래 남는 아키텍처와 프로세스 결정 근거는 `docs/adr/`에서 확인하세요. `openspec/changes/<change>/`는 진행 중인 Spec Change를 리뷰하고 구현하기 위한 패키지이며, 해당 변경을 작업할 때만 읽습니다. `openspec/changes/archive/`는 활성 지침이 아니라 이력으로 취급합니다. `docs/research/`는 ignored 로컬 리서치와 초안 공간이며, 결론이 Spec 또는 ADR로 승격되기 전까지 저장소 지침으로 취급하지 마세요.
 
-동작 계약이 바뀌면 Spec을 추가하거나 수정하고, 이후 작업을 제약할 아키텍처 또는 프로세스 결정이 생기면 ADR을 추가하세요. 단순 구현 메모, 작업 목록, 리서치 덤프, 내부 리팩터는 기본적으로 Spec이나 ADR로 만들지 않습니다. ADR 파일명은 `docs/adr/README.md`의 `yyyyMMddHHmmss-<slug>.md` 규칙을 따릅니다.
+이 저장소의 모든 문서 산출물은 한국어로 작성합니다. 여기에는 `openspec/changes/`, `openspec/specs/`, `docs/adr/`, `docs/*.md`, 개발 가이드, 리서치 정리, PR 본문과 리뷰 노트가 포함됩니다. 외부 API 이름, 코드 식별자, 명령어, 로그, 에러 메시지, 원문 인용처럼 한국어로 바꾸면 의미가 흐려지는 항목만 원문을 유지합니다.
 
-작업을 시작할 때 먼저 변경 유형을 분류하세요. 관찰 가능한 제품 동작이나 외부 계약이 바뀌면 `openspec/changes/<change>/`에 리뷰 가능한 Spec Change를 만든 뒤 구현합니다. 구현은 TDD로 진행하고, 완료 후 delta spec을 `openspec/specs/`에 반영한 다음 change를 archive로 이동합니다. 이후 작업을 제약할 아키텍처, 프로세스, 운영상 결정이 생기면 `docs/adr/`에 ADR을 추가합니다. 단순 내부 리팩터나 작은 버그 수정처럼 동작 계약과 장기 결정이 바뀌지 않는 작업은 기존 테스트와 코드 변경만으로 처리합니다.
+동작 계약이 바뀌면 Spec을 추가하거나 수정하고, 이후 작업을 제약할 아키텍처 또는 프로세스 결정이 생기면 ADR을 추가하세요. 단순 구현 메모, 작업 목록, 리서치 덤프, 내부 리팩터는 기본적으로 Spec이나 ADR로 만들지 않습니다. ADR 파일명은 `docs/adr/README.md`의 `YYYY-MM-DD-<slug>.md` 규칙을 따릅니다.
+
+작업을 시작할 때 먼저 변경 유형을 분류하세요. 관찰 가능한 제품 동작이나 외부 계약이 바뀌면 `openspec/changes/<change>/`에 리뷰 가능한 Spec Change를 만든 뒤 구현합니다. 새 활성 OpenSpec change 디렉터리는 `openspec/changes/<slug>/`처럼 `openspec/changes/`의 직접 하위에 두고, 의미 있는 소문자 kebab-case slug만 사용합니다. 예: `openspec/changes/add-tracking-evidence-contract/`. OpenSpec CLI가 숫자로 시작하는 change 이름을 거부할 수 있으므로 slug는 영문자로 시작해야 합니다. 날짜나 별도 prefix는 붙이지 않습니다. `openspec/changes/change/<slug>/`처럼 중간 `change/` 디렉터리를 두지 않습니다. nested change는 OpenSpec의 전체 change 검증과 status 명령에서 일관되게 발견되지 않습니다. OpenSpec archive 명령이 archive 날짜를 디렉터리명 앞에 붙입니다. 구현은 TDD로 진행하고, 완료 후 delta spec을 `openspec/specs/`에 반영한 다음 change를 archive로 이동합니다. `openspec/changes/archive/` 아래의 archived change 디렉터리는 OpenSpec archive 명령이 만든 이력으로 취급합니다. 이후 작업을 제약할 아키텍처, 프로세스, 운영상 결정이 생기면 `docs/adr/`에 ADR을 추가합니다. 단순 내부 리팩터나 작은 버그 수정처럼 동작 계약과 장기 결정이 바뀌지 않는 작업은 기존 테스트와 코드 변경만으로 처리합니다.
 
 ## Build, Test, and Development Commands
 
@@ -34,7 +36,7 @@ Kotlin 2.2, Java 21 toolchain, Spring Boot 기반 `buildSrc` 컨벤션을 따르
 
 ## Commit & Pull Request Guidelines
 
-브랜치 관리는 GitHub Flow를 따르되 `dev`를 기본 통합 브랜치로 둡니다. `main`은 릴리스가 필요할 때만 병합하는 안정 브랜치로 유지합니다. 기능 개발은 `feat/<topic>` 브랜치에서 진행합니다. 큰 단위 프로젝트는 `integration/<topic>` 통합 브랜치를 만들고, 관련 기능 브랜치는 여기에 먼저 병합한 뒤 완료 시 `dev`로 올립니다. 커밋 메시지는 간결하고 변경 의도 중심으로 작성하세요. PR에는 해결하려는 문제, 선택한 접근 방식, 검증 결과, 관련 이슈를 포함합니다. 런타임 동작, API 응답, 개발자-facing 출력이 바뀌면 스크린샷이나 로그를 첨부하세요.
+브랜치 관리는 GitHub Flow를 따르되 `dev`를 기본 통합 브랜치로 둡니다. `main`은 릴리스가 필요할 때만 병합하는 안정 브랜치로 유지합니다. 기능 개발은 `feat/<topic>` 브랜치에서 진행합니다. 큰 단위 프로젝트는 `integration/<topic>` 통합 브랜치를 만들고, 관련 기능 브랜치는 여기에 먼저 병합한 뒤 완료 시 `dev`로 올립니다. 커밋 메시지는 간결하고 변경 의도 중심으로 작성하세요. PR 제목과 본문은 한국어로 작성하고, 해결하려는 문제, 선택한 접근 방식, 검증 결과, 관련 이슈를 포함합니다. 런타임 동작, API 응답, 개발자-facing 출력이 바뀌면 스크린샷이나 로그를 첨부하세요.
 
 ## Agent-Specific Instructions
 
