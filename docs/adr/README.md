@@ -12,7 +12,7 @@ Spec Change 자료는 `openspec/changes/<change>/` 아래에 둡니다.
 
 각 ADR은 짧게 유지하고 다음 형식을 사용합니다.
 
-- 파일명: `yyyyMMddHHmmss-<slug>.md`
+- 파일명: `YYYY-MM-DD-<slug>.md`
 - `Status`: Proposed, Accepted, Superseded, Deprecated 중 하나
 - `Context`: 결정을 만들게 된 배경, 제약, 문제
 - `Decision`: 선택한 정책 또는 아키텍처
