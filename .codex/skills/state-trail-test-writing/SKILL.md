@@ -3,13 +3,13 @@ name: state-trail-test-writing
 description: StateTrail 변경의 API 통합 테스트, edge-case 테스트, behavior-focused coverage, 검증 evidence 작성을 안내합니다.
 ---
 
-StateTrail 변경에 맞는 테스트를 작성하거나 보완할 때 사용합니다. 이 스킬은 테스트 충분성을 판단하는 실행 표면이며, 장기 정책의 원문은 아래 source of truth를 확인하세요.
+StateTrail 변경에 맞는 테스트를 작성하거나 보완할 때 repo-local `state-trail-test-engineer` agent 또는 generic test workflow와 함께 사용합니다. 이 스킬은 테스트 충분성을 판단하는 실행 표면이며, 장기 정책의 원문은 아래 source of truth를 확인하세요.
 
 **Source of Truth**
 
 - 제품/아키텍처 경계: `@ARCHITECTURE.md`
 - 현재 동작 계약: `openspec/specs/`
-- 진행 중인 품질 하네스 변경: `openspec/changes/d20260706-add-state-trail-harness/`
+- 품질 하네스 계약: `openspec/specs/quality-harness/spec.md`
 - 장기 결정 근거: `docs/adr/`
 
 **입력**
@@ -17,6 +17,12 @@ StateTrail 변경에 맞는 테스트를 작성하거나 보완할 때 사용합
 - 변경하려는 기능, 버그 수정, 리팩터링 범위
 - 관련 OpenSpec change 또는 spec 경로가 있으면 함께 확인합니다
 - API, 로그, hook, CI, 테스트 하네스 중 영향을 받는 표면
+
+**라우팅 원칙**
+
+- 일반적인 StateTrail 테스트 작성/보완은 `.codex/agents/state-trail-test-engineer.toml`을 사용해 경량 모델로 실행합니다.
+- 테스트 인프라 자체, flaky test root cause, 다중 모듈 test architecture, 보안/권한 검증, 복잡한 통합 환경은 global `test-engineer`, `architect`, `verifier`로 올립니다.
+- 전용 agent는 테스트 설계와 테스트 코드 작성에 집중하고, 제품 구현 변경이 필요하면 필요한 조건을 보고합니다.
 
 **절차**
 
@@ -76,3 +82,14 @@ Gaps:
 - 테스트 개수를 기계적으로 늘리지 마세요. 변경 위험과 관찰 가능한 contract를 기준으로 충분성을 판단합니다.
 - production 동작 계약이 바뀌면 구현 전에 OpenSpec change가 필요한지 확인합니다.
 - 장기 정책 원문은 이 파일에 복제하지 말고 source of truth 경로를 참조합니다.
+
+**전용 agent 라우팅 기준**
+
+기본 StateTrail 테스트 작성/보완은 전용 `.codex/agents/state-trail-test-engineer.toml`을 사용합니다. 이 agent는 `gpt-5.4` 기반의 Sonnet급 테스트 표면이며, API happy-case integration, edge-case selection, behavior-focused coverage, 실행 evidence를 빠르게 갖추기 위한 용도입니다.
+
+다음 경우에는 더 무거운 global `test-engineer`, `architect`, `verifier`를 함께 사용하거나 대체합니다.
+
+- flaky test root cause 분석이나 테스트 인프라 변경이 필요합니다.
+- 다중 모듈 test architecture, fixture convention, CI 병렬화처럼 장기 구조 판단을 요구합니다.
+- 보안, 권한, 인증, 데이터 손실 같은 high-risk behavior를 검증합니다.
+- 경량 테스트 agent가 coverage gap을 보고했고, 해결이 제품 설계 또는 아키텍처 판단을 요구합니다.

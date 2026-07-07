@@ -56,7 +56,7 @@ StateTrail 저장소의 code review, test writing, pre-commit, CI, LogQL 검증 
 
 ### Requirement: API Test Coverage Guidance
 
-저장소 품질 하네스는 API 변경에 대해 깨지기 쉬운 구현 세부 coverage를 강제하지 않으면서 behavior-focused test를 요구하는 StateTrail 테스트 작성 guidance를 MUST 정의해야 합니다.
+저장소 품질 하네스는 API 변경에 대해 깨지기 쉬운 구현 세부 coverage를 강제하지 않으면서 behavior-focused test를 요구하는 StateTrail 테스트 작성 guidance와 경량 repo-local test agent를 MUST 정의해야 합니다.
 
 #### Scenario: API behavior is added or changed
 - **WHEN** 변경이 관찰 가능한 API 동작을 추가하거나 변경합니다
@@ -69,6 +69,10 @@ StateTrail 저장소의 code review, test writing, pre-commit, CI, LogQL 검증 
 #### Scenario: Change has no API surface
 - **WHEN** 변경이 순수 내부 변경이고 관찰 가능한 API 동작이 없습니다
 - **THEN** 구현은 가짜 API test를 추가하지 않고 영향받는 contract에 대한 equivalent behavior-focused coverage를 포함합니다
+
+#### Scenario: Routine test writing uses lightweight agent
+- **WHEN** StateTrail 변경의 테스트 작성이나 보완을 일반적인 저장소 전용 test sub-agent에 위임합니다
+- **THEN** test writer는 `.codex/agents/state-trail-test-engineer.toml`의 경량 모델 라우팅을 우선 사용하고, 테스트 인프라/flaky/high-risk 변경만 더 무거운 test-engineer 또는 architect로 올립니다
 
 ### Requirement: Test Harness Enforcement Boundary
 
@@ -84,7 +88,7 @@ StateTrail 저장소의 code review, test writing, pre-commit, CI, LogQL 검증 
 
 ### Requirement: StateTrail Code Review Guidance
 
-저장소 품질 하네스는 reviewer가 generic code-review workflow와 함께 적용할 수 있는 StateTrail 전용 code-review guidance를 MUST 정의해야 합니다. 이 guidance는 OpenSpec, ADR, architecture 문서를 source of truth로 참조해야 하며 장기 정책 원문을 중복 정의하면 안 됩니다.
+저장소 품질 하네스는 reviewer가 적용할 수 있는 StateTrail 전용 code-review guidance와 경량 repo-local code-review agent를 MUST 정의해야 합니다. 이 guidance와 agent는 OpenSpec, ADR, architecture 문서를 source of truth로 참조해야 하며 장기 정책 원문을 중복 정의하면 안 됩니다.
 
 #### Scenario: Review checks project contracts
 - **WHEN** reviewer가 StateTrail 변경을 평가합니다
@@ -97,6 +101,10 @@ StateTrail 저장소의 code review, test writing, pre-commit, CI, LogQL 검증 
 #### Scenario: Review checks fallback behavior
 - **WHEN** 변경이 fallback, compatibility, best-effort 동작을 도입합니다
 - **THEN** reviewer는 fallback이 failure evidence를 보존하고 root cause를 숨기지 않는지 검증합니다
+
+#### Scenario: Routine review uses lightweight agent
+- **WHEN** StateTrail 변경을 일반적인 저장소 전용 리뷰로 sub-agent에 위임합니다
+- **THEN** reviewer는 `.codex/agents/state-trail-code-reviewer.toml`의 경량 모델 라우팅을 우선 사용하고, 보안/아키텍처/high-risk 변경만 더 무거운 reviewer 또는 architect로 올립니다
 
 ### Requirement: LogQL Verification Modes
 

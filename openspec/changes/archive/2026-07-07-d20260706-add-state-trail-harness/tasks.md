@@ -2,7 +2,8 @@
 
 - [x] 1.1 API happy-case, edge-case, behavior-focused coverage, 검증 기대사항을 안내하되 OpenSpec/ADR/architecture를 source of truth로 참조하는 `.codex/skills/state-trail-test-writing/SKILL.md`를 추가합니다.
 - [x] 1.2 StateTrail 전용 Spec, ADR, architecture, harness, LogQL, fallback-review check를 안내하되 장기 정책 원문을 중복하지 않는 `.codex/skills/state-trail-code-review/SKILL.md`를 추가합니다.
-- [x] 1.3 스킬을 추가한 뒤 전용 `.codex/agents/state-trail-code-reviewer.toml`이 필요한지 판단하고, skill layer만으로 부족할 때만 추가합니다.
+- [x] 1.3 경량 모델로 StateTrail 리뷰를 수행하는 전용 `.codex/agents/state-trail-code-reviewer.toml`을 추가하고, high-risk 변경은 더 무거운 reviewer로 올리는 기준을 문서화합니다.
+- [x] 1.4 경량 모델로 StateTrail 테스트 작성/보완을 수행하는 전용 `.codex/agents/state-trail-test-engineer.toml`을 추가하고, 테스트 인프라/flaky/high-risk 변경은 더 무거운 test-engineer로 올리는 기준을 문서화합니다.
 
 ## 2. 검증 스크립트
 
