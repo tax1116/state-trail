@@ -3,13 +3,13 @@ name: state-trail-code-review
 description: StateTrail 변경을 OpenSpec, ADR, architecture, quality harness, LogQL, fallback 관점으로 리뷰하도록 안내합니다.
 ---
 
-StateTrail 변경을 리뷰할 때 generic code review workflow와 함께 사용합니다. 이 스킬은 StateTrail 전용 확인 순서를 제공하며, 장기 정책 원문은 source of truth 문서를 참조합니다.
+StateTrail 변경을 리뷰할 때 repo-local `state-trail-code-reviewer` agent 또는 generic code review workflow와 함께 사용합니다. 이 스킬은 StateTrail 전용 확인 순서를 제공하며, 장기 정책 원문은 source of truth 문서를 참조합니다.
 
 **Source of Truth**
 
 - 제품/아키텍처 경계: `@ARCHITECTURE.md`
 - 현재 동작 계약: `openspec/specs/`
-- 진행 중인 품질 하네스 변경: `openspec/changes/d20260706-add-state-trail-harness/`
+- 품질 하네스 계약: `openspec/specs/quality-harness/spec.md`
 - 장기 결정 근거: `docs/adr/`
 - 활성 OpenSpec change: `openspec/changes/<change>/`
 
@@ -18,6 +18,7 @@ StateTrail 변경을 리뷰할 때 generic code review workflow와 함께 사용
 - 결함, 회귀, 누락된 검증, 계약 위반을 먼저 찾습니다.
 - 장기 정책 원문을 리뷰 코멘트에 다시 정의하지 말고, 관련 source-of-truth 경로를 인용합니다.
 - 구현 스타일보다 StateTrail의 관찰 가능한 동작, evidence, 실패 시 진단 가능성을 우선합니다.
+- 일반적인 StateTrail 리뷰는 `.codex/agents/state-trail-code-reviewer.toml`을 사용해 경량 모델로 실행하고, 보안/아키텍처/high-risk 변경은 global `code-reviewer` 또는 `architect`로 올립니다.
 
 **절차**
 
@@ -76,10 +77,13 @@ Summary:
 - <짧은 변경/리뷰 요약>
 ```
 
-**전용 agent 판단 기준**
+**전용 agent 라우팅 기준**
 
-기본은 이 스킬과 generic reviewer/test-engineer 역할을 함께 쓰는 것입니다. 전용 `.codex/agents/state-trail-code-reviewer.toml`은 다음 조건이 반복적으로 확인될 때만 고려하세요.
+기본 StateTrail 리뷰는 전용 `.codex/agents/state-trail-code-reviewer.toml`을 사용합니다. 이 agent는 `gpt-5.4` 기반의 Sonnet급 리뷰 표면이며, OpenSpec/ADR/architecture/harness/LogQL/fallback evidence처럼 저장소 전용 체크를 빠르게 수행하기 위한 용도입니다.
 
-- 리뷰마다 같은 StateTrail 전용 검토 순서를 누락합니다.
-- LogQL, harness, fallback evidence 판단이 skill 안내만으로 일관되게 유지되지 않습니다.
-- 여러 agent가 동시에 리뷰하면서 같은 source-of-truth 해석을 반복해서 드리프트합니다.
+다음 경우에는 더 무거운 global `code-reviewer`, `architect`, `verifier`를 함께 사용하거나 대체합니다.
+
+- 보안, 권한, 외부 입력, credential, 데이터 손실 위험이 있는 변경입니다.
+- 아키텍처 경계, 모듈 의존 방향, 장기 운영 결정을 바꿉니다.
+- 여러 모듈에 걸친 큰 diff라 경량 리뷰만으로 blast radius를 판단하기 어렵습니다.
+- 경량 리뷰가 `REQUEST CHANGES`를 냈고, 수정 방향이 설계 판단을 요구합니다.
